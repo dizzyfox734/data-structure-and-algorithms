@@ -11,7 +11,7 @@ public interface StackInterface<E> {
     E push(E item);
 
     /**
-     * Remove teh element at the top of the stack and return the removed element.
+     * Remove the element at the top of the stack and return the removed element.
      * 
      * @return removed element
      */
