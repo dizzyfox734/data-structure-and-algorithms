@@ -1,5 +1,7 @@
 package ArrayQueue;
 
+import java.util.NoSuchElementException;
+
 import Interface.Queue;
 
 public class ArrayQueue<E> implements Queue<E> {
@@ -63,5 +65,71 @@ public class ArrayQueue<E> implements Queue<E> {
         this.array = newArray;
         this.front = 0;
         this.rear = this.size;
+    }
+
+    @Override
+    public boolean offer(E item) {
+        if ((rear + 1) % array.length == front) {
+            resize(array.length * 2);
+        }
+
+        rear = (rear + 1) % array.length;
+
+        array[rear] = item;
+        size++;
+
+        return true;
+    }
+
+    @Override
+    public E poll() {
+        if (size == 0) {
+            return null;
+        }
+
+        front = (front + 1) % array.length;
+
+        @SuppressWarnings("unchecked")
+        E item = (E) array[front];
+
+        array[front] = null;
+        size--;
+
+        if (array.length > DEFAULT_CAPACITY && size < (array.length / 4)) {
+            resize(Math.max(DEFAULT_CAPACITY, array.length / 2));
+        }
+
+        return item;
+    }
+
+    public E remove() {
+        E item = pull();
+
+        if (item == null) {
+            throw new NoSuchElementException();
+        }
+
+        return item;
+    }
+
+    @Override
+    public E peek() {
+        if (size == 0) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        E item = (E)array[(front + 1) % array.length];
+        return item;
+    }
+
+    public E element() {
+        E item = peek();
+
+        if (item == null) {
+            throw new NoSuchElementException();
+        }
+
+        return item;
     }
 }
