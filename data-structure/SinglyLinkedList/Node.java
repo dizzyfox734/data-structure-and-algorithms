@@ -1,6 +1,6 @@
 package SinglyLinkedList;
 
-public class Node<E> {
+class Node<E> {
 
     E data;
     Node<E> next;
