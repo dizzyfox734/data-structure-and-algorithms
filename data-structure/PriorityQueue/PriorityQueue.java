@@ -2,6 +2,7 @@ package PriorityQueue;
 
 import Interface.Queue;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 public class PriorityQueue<E> implements Queue<E> {
 
@@ -54,5 +55,154 @@ public class PriorityQueue<E> implements Queue<E> {
         this.array = newArray;
     }
 
-    
+    @Override
+    public boolean offer(E value) {
+        if (size + 1 == array.length) {
+            resize(array.length * 2);
+        }
+
+        siftUp(size + 1, value);
+        size++;
+        return true;
+    }
+
+    private void siftUp(int idx, E target) {
+        if (comparator != null) {
+            siftUpComparator(idx, target, comparator);
+        } else {
+            siftUpComparable(idx, target);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void siftUpComparator(int idx, E target, Comparator<? super E> comp) {
+        while(idx > 1) {
+            int parent = getParent(idx);
+            Object parentVal = array[parent];
+
+            if (comp.compare(target, (E) parentVal) >= 0) {
+                break;
+            }
+            array[idx] = parentVal;
+            idx = parent;
+        }
+        array[idx] = target;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void siftUpComparable(int idx, E target) {
+        Comparable<? super E> comp = (Comparable<? super E>) target;
+
+        while(idx > 1) {
+            int parent = getParent(idx);
+            Object parentVal = array[parent];
+
+            if (comp.compareTo((E) parentVal) >= 0) {
+                break;
+            }
+            array[idx] = parentVal;
+            idx = parent;
+        }
+        array[idx] = comp;
+    }
+
+    @Override
+    public E poll() {
+        if (array[1] == null) {
+            return null;
+        }
+
+        return remove();
+    }
+
+    @SuppressWarnings("unchecked")
+    public E remove() {
+        if (array[1] == null) {
+            throw new NoSuchElementException();
+        }
+
+        E result = (E) array[1];
+        E target;
+        if (size == 1) {
+            target = null;
+        } else {
+            target = (E) array[size];
+        }
+
+        array[size] = null;
+        size--;
+        siftDown(1, target);
+
+        return result;
+    }
+
+    private void siftDown(int idx, E target) {
+        if (comparator != null) {
+            siftDownComparator(idx, target , comparator);
+        } else {
+            siftDownComparable(idx, target);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void siftDownComparator(int idx, E target, Comparator<? super E> comp) {
+        array[idx] = null;
+
+        int parent = idx;
+        int child;
+
+        while((child = getLeftChild(parent)) <= size) {
+            int right = getRightChild(parent);
+            Object childVal = array[child];
+
+            if (right <= size && comp.compare((E) childVal, (E) array[right]) > 0) {
+                child = right;
+                childVal = array[child];
+            }
+
+            if (comp.compare(target, (E) childVal) <= 0) {
+                break;
+            }
+            array[parent] = childVal;
+            parent = child;
+        }
+
+        array[parent] = target;
+
+        if (array.length > DEFAULT_CAPACITY && size < array.length / 4) {
+            resize(Math.max(DEFAULT_CAPACITY, array.length / 2));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void siftDownComparable(int idx, E target) {
+        Comparable<? super E> comp = (Comparable<? super E>) target;
+
+        array[idx] = null;
+
+        int parent = idx;
+        int child;
+
+        while((child = (parent << 1)) <= size) {
+            int right = child + 1;
+            Object c = array[child];
+
+            if(right <= size && ((Comparable<? super E>)c).compareTo((E)array[right]) > 0) {
+                child = right;
+                c = array[child];
+            }
+
+            if(comp.compareTo((E) c) <= 0){
+                break;
+            }
+            array[parent] = c;
+            parent = child;
+
+        }
+        array[parent] = comp;
+
+        if(array.length > DEFAULT_CAPACITY && size < array.length / 4) {
+            resize(Math.max(DEFAULT_CAPACITY, array.length / 2));
+        }
+    }
 }
