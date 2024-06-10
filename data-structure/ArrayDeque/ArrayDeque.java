@@ -50,7 +50,7 @@ public class ArrayDeque<E> implements Deque<E> {
         return offerLast(item);
     }
 
-    public booean offerLast(E item) {
+    public boolean offerLast(E item) {
         if ((rear + 1) % array.length == front) {
             resize(array.length * 2);
         }

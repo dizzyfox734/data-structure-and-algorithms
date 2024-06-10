@@ -103,7 +103,7 @@ public class ArrayQueue<E> implements Queue<E> {
     }
 
     public E remove() {
-        E item = pull();
+        E item = poll();
 
         if (item == null) {
             throw new NoSuchElementException();

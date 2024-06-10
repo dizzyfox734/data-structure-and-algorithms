@@ -1,6 +1,8 @@
 package PriorityQueue;
 
 import Interface.Queue;
+
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
@@ -205,4 +207,37 @@ public class PriorityQueue<E> implements Queue<E> {
             resize(Math.max(DEFAULT_CAPACITY, array.length / 2));
         }
     }
+
+	public int size() {
+		return this.size;
+	}
+
+	public E element() {
+		return peek();
+	}
+
+	@SuppressWarnings("unchecked")
+	public E peek() {
+		if(array[1] == null) {
+			throw new NoSuchElementException();
+		}
+		return (E)array[1];
+	}
+
+	public boolean isEmpty() {
+		return size == 0;
+	}
+	
+	public Object[] toArray() {
+		return toArray(new Object[size]);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T[] toArray(T[] a) {
+		if(a.length <= size) {
+			return (T[]) Arrays.copyOfRange(array, 1, size + 1, a.getClass());
+		}
+		System.arraycopy(array, 1, a, 0, size);
+		return a;
+	}
 }
