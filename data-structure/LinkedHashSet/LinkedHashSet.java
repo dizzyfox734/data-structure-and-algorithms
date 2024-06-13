@@ -121,4 +121,63 @@ public class LinkedHashSet<E> implements Set<E> {
         }
         return null;
     }
+
+    private void unlinkNode(Node<E> o) {
+        Node<E> prevNode = o.prevLink;
+        Node<E> nextNode = o.nextLink;
+
+        if (prevNode == null) {
+            head = nextNode;
+        } else {
+            prevNode.nextLink = nextNode;
+            o.prevLink = null;
+        }
+
+        if (nextNode == null) {
+            tail = prevNode;
+        } else {
+            nextNode.prevLink = prevNode;
+            o.nextLink = null;
+        }
+
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return remove(hash(o), o) != null;
+    }
+
+    private Object remove(int hash, Object key) {
+        int idx = hash % table.length;
+
+        Node<E> node = table[idx];
+        Node<E> removedNode = null;
+        Node<E> prev = null;
+
+        if (node == null) {
+            return null;
+        }
+
+        while (node != null) {
+            if (node.hash == hash && (node.key == key || node.key.equals(key))) {
+                removedNode = node;
+
+                if (prev == null) {
+                    table[idx] = node.next;
+                } else {
+                    prev.next = node.next;
+                }
+
+                unlinkNode(node);
+                node = null;
+
+                size--;
+                break;
+            }
+            prev = node;
+            node = node.next;
+        }
+
+        return removedNode;
+    }
 }
