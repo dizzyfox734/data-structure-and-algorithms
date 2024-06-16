@@ -180,4 +180,74 @@ public class LinkedHashSet<E> implements Set<E> {
 
         return removedNode;
     }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        int idx = hash(o) % table.length;
+        Node<E> temp = table[idx];
+
+        while (temp != null) {
+            if (o == temp.key || (o != null && temp.key.equals(o))) {
+                return true;
+            }
+            temp = temp.next;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void clear() {
+        if (table != null && size > 0) {
+            for (int i = 0; i < table.length; i++) {
+                table[i] = null;
+            }
+            size = 0;
+        }
+        head = tail = null;
+    }
+	
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean equals(Object o) {
+        if(o == this) {
+            return true;
+        }
+        if(!(o instanceof LinkedHashSet)) {
+            return false;
+        }
+
+        LinkedHashSet<E> oSet;
+
+        try {
+            oSet = (LinkedHashSet<E>) o;
+            if(oSet.size() != size) {
+                return false;
+            }
+
+            for(int i = 0; i < oSet.table.length; i++) {
+                Node<E> oTable = oSet.table[i];
+                                    
+                while(oTable != null) {
+                    if(!contains(oTable)) {
+                        return false;
+                    }
+                    oTable = oTable.next;
+                }
+            }
+        } catch(ClassCastException e) {
+            return false;
+        }
+        return true;
+    }
 }
